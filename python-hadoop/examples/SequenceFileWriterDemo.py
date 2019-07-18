@@ -16,30 +16,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from hadoop.io.SequenceFile import CompressionType
-from hadoop.io import LongWritable
+from hadoop.io import BytesWritable,Text
 from hadoop.io import SequenceFile
 
-def writeData(writer):
-    key = LongWritable()
-    value = LongWritable()
+def writeData(writer, filename, data):
+    key = Text()
+    value = BytesWritable()
 
-    for i in range(1000):
-        key.set(1000 - i)
-        value.set(i)
-        print('[%d] %s %s' % (writer.getLength(), key.toString(), value.toString()))
-        writer.append(key, value)
+    key.set(filename)
+    value.set(data)
+    writer.append(key, value)
+
+def mergeFiles(seq_file_name, directory, suffix):
+    writer = SequenceFile.createWriter(seq_file_name, Text, BytesWritable)
+    for filename in os.listdir(directory):
+        if filename.endswith(suffix):
+            f = open(os.path.join(directory, filename), 'rb')
+            data = f.read()
+            writeData(writer, filename, data)
+    writer.close()
 
 if __name__ == '__main__':
-    writer = SequenceFile.createWriter('test.seq', LongWritable, LongWritable)
-    writeData(writer)
-    writer.close()
-
-    writer = SequenceFile.createWriter('test-record.seq', LongWritable, LongWritable, compression_type=CompressionType.RECORD)
-    writeData(writer)
-    writer.close()
-
-    writer = SequenceFile.createWriter('test-block.seq', LongWritable, LongWritable, compression_type=CompressionType.BLOCK)
-    writeData(writer)
-    writer.close()
-
+    mergeFiles('zipfiles.seq', '/Users/jietang/Downloads/D33', '.zip')
