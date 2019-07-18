@@ -51,6 +51,8 @@ class FileOutputStream(OutputStream):
         return self._fd.write(value)
 
     def write(self, value):
+        if type(value) is str:
+            value = value.encode('utf-8')
         return self._fd.write(value)
 
 class DataOutputStream(object):
@@ -117,7 +119,7 @@ class ByteArrayOutputStream(OutputStream):
         return self._count
 
     def toByteArray(self):
-        return ''.join(self._buffer)
+        return b''.join(self._buffer)
 
     def reset(self):
         self._buffer = []

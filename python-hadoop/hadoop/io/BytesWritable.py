@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from Writable import AbstractValueWritable
+from .Writable import AbstractValueWritable
 
 class BytesWritable(AbstractValueWritable):
     def write(self, data_output):
@@ -28,4 +28,4 @@ class BytesWritable(AbstractValueWritable):
         self._value = data_input.readFully(size)
 
     def toString(self):
-        return ''.join(chr(x % 256) for x in self._value)
+        return b''.join(chr(x % 256) for x in self._value)
